@@ -9,6 +9,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  langchain: ^0.7.7+1
+  langchain_community: ^0.3.2+2
+  langchain_ollama: ^0.3.2+1
+  objectbox: ^4.0.3
+  objectbox_flutter_libs: any
 
 dev_dependencies:
   flutter_test:
