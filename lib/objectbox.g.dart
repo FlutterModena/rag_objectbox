@@ -20,37 +20,37 @@ export 'package:objectbox/objectbox.dart'; // so that callers only have to impor
 
 final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
-      id: const obx_int.IdUid(1, 7595807276343467793),
+      id: const obx_int.IdUid(1, 2839105907916871968),
       name: 'MyDocumentEntity',
-      lastPropertyId: const obx_int.IdUid(5, 5761058607071135601),
+      lastPropertyId: const obx_int.IdUid(5, 5200526546002264906),
       flags: 0,
       properties: <obx_int.ModelProperty>[
         obx_int.ModelProperty(
-            id: const obx_int.IdUid(1, 436685056260534132),
+            id: const obx_int.IdUid(1, 5433780972327256487),
             name: 'internalId',
             type: 6,
             flags: 1),
         obx_int.ModelProperty(
-            id: const obx_int.IdUid(2, 9183232872876769516),
+            id: const obx_int.IdUid(2, 5625800983867164346),
             name: 'id',
             type: 9,
             flags: 0),
         obx_int.ModelProperty(
-            id: const obx_int.IdUid(3, 4195954449526789692),
+            id: const obx_int.IdUid(3, 6089226514107797198),
             name: 'content',
             type: 9,
             flags: 0),
         obx_int.ModelProperty(
-            id: const obx_int.IdUid(4, 2370285909023550247),
+            id: const obx_int.IdUid(4, 6062846446587497079),
             name: 'metadata',
             type: 9,
             flags: 0),
         obx_int.ModelProperty(
-            id: const obx_int.IdUid(5, 5761058607071135601),
+            id: const obx_int.IdUid(5, 5200526546002264906),
             name: 'embedding',
             type: 28,
             flags: 8,
-            indexId: const obx_int.IdUid(1, 995651167544835833),
+            indexId: const obx_int.IdUid(1, 7400951033492836854),
             hnswParams: obx_int.ModelHnswParams(
               dimensions: 1024,
               distanceType: 2,
@@ -95,8 +95,8 @@ Future<obx.Store> openStore(
 obx_int.ModelDefinition getObjectBoxModel() {
   final model = obx_int.ModelInfo(
       entities: _entities,
-      lastEntityId: const obx_int.IdUid(1, 7595807276343467793),
-      lastIndexId: const obx_int.IdUid(1, 995651167544835833),
+      lastEntityId: const obx_int.IdUid(1, 2839105907916871968),
+      lastIndexId: const obx_int.IdUid(1, 7400951033492836854),
       lastRelationId: const obx_int.IdUid(0, 0),
       lastSequenceId: const obx_int.IdUid(0, 0),
       retiredEntityUids: const [],

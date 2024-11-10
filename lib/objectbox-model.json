@@ -4,44 +4,44 @@
   "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
   "entities": [
     {
-      "id": "1:7595807276343467793",
-      "lastPropertyId": "5:5761058607071135601",
+      "id": "1:2839105907916871968",
+      "lastPropertyId": "5:5200526546002264906",
       "name": "MyDocumentEntity",
       "properties": [
         {
-          "id": "1:436685056260534132",
+          "id": "1:5433780972327256487",
           "name": "internalId",
           "type": 6,
           "flags": 1
         },
         {
-          "id": "2:9183232872876769516",
+          "id": "2:5625800983867164346",
           "name": "id",
           "type": 9
         },
         {
-          "id": "3:4195954449526789692",
+          "id": "3:6089226514107797198",
           "name": "content",
           "type": 9
         },
         {
-          "id": "4:2370285909023550247",
+          "id": "4:6062846446587497079",
           "name": "metadata",
           "type": 9
         },
         {
-          "id": "5:5761058607071135601",
+          "id": "5:5200526546002264906",
           "name": "embedding",
           "type": 28,
           "flags": 8,
-          "indexId": "1:995651167544835833"
+          "indexId": "1:7400951033492836854"
         }
       ],
       "relations": []
     }
   ],
-  "lastEntityId": "1:7595807276343467793",
-  "lastIndexId": "1:995651167544835833",
+  "lastEntityId": "1:2839105907916871968",
+  "lastIndexId": "1:7400951033492836854",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",
   "modelVersion": 5,
