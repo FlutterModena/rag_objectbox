@@ -30,7 +30,8 @@ class _MainAppState extends State<MainApp> {
   final ScrollController _scrollController = ScrollController();
   RAGWithObjectBox? ragWithObjectBox;
   bool loading = false;
-  List<ChatMessage> history = [];
+  List<ChatMessage> historyForUI = [];
+  List<ChatMessage> historyForLLM = [];
 
   void initRAG() async {
     ragWithObjectBox =
@@ -39,9 +40,10 @@ class _MainAppState extends State<MainApp> {
   }
 
   void sendMessage(String msg) async {
-    ragWithObjectBox!.invoke(msg, history).then(
-          (_) => setState(
+    ragWithObjectBox!.invoke(msg, historyForLLM).then(
+          (answer) => setState(
             () {
+              historyForUI.add(ChatMessage.ai(answer));
               loading = false;
               _scrollController.jumpTo(_scrollController.positions.last.pixels);
             },
@@ -49,6 +51,7 @@ class _MainAppState extends State<MainApp> {
         );
     setState(() {
       loading = true;
+      historyForUI.add(ChatMessage.humanText(msg));
       _scrollController.jumpTo(_scrollController.positions.last.pixels);
     });
   }
@@ -104,7 +107,7 @@ class _MainAppState extends State<MainApp> {
                   reverse: true,
                   controller: _scrollController,
                   children: [
-                    for (var message in history.reversed)
+                    for (var message in historyForUI.reversed)
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
