@@ -49,7 +49,6 @@ class _MainAppState extends State<MainApp> {
         );
     setState(() {
       loading = true;
-      history.add(ChatMessage.humanText(msg));
       _scrollController.jumpTo(_scrollController.positions.last.pixels);
     });
   }
