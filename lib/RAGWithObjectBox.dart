@@ -163,7 +163,6 @@ don't know. Use three sentences maximum and keep the
   Future<String> invoke(String input, List<ChatMessage> chatHistory) async {
     String output =
         await _ragChain.invoke({'chat_history': chatHistory, 'input': input});
-    chatHistory.add(ChatMessage.humanText(input));
     chatHistory.add(ChatMessage.ai(output));
     return output;
   }
