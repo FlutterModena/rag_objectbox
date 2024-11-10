@@ -135,10 +135,14 @@ class _MainAppState extends State<MainApp> {
                     child: TextField(
                       autofocus: true,
                       controller: _textController,
+                      style: const TextStyle(color: Colors.white),
                       decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: "Write your Message",
-                          hintStyle: TextStyle(color: Color(0xFF919191))),
+                        border: OutlineInputBorder(),
+                        hintText: "Write your Message",
+                        hintStyle: TextStyle(
+                          color: Color(0xFF919191),
+                        ),
+                      ),
                       onSubmitted: (msg) {
                         sendMessage(msg);
                         _textController.clear();
