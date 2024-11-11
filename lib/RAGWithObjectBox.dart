@@ -1,12 +1,13 @@
 import 'dart:math';
 
-import 'package:objectbox/objectbox.dart' as objectbox;
+import 'objectbox.g.dart';
+import 'package:objectbox/objectbox.dart' as obx;
 import 'package:langchain/langchain.dart';
 import 'package:langchain_community/langchain_community.dart';
 import 'package:langchain_ollama/langchain_ollama.dart';
 
 import './DirectoryLoader.dart';
-import './MyObjectBoxVectorStore.dart';
+import 'MyObjectBoxVectorStore.dart';
 
 Iterable<List<T>> splitListInChunks<T>(List<T> list, int chunkSize) sync* {
   for (int i = 0; i < list.length; i += chunkSize) {
@@ -22,8 +23,9 @@ class RAGWithObjectBox {
   final String dbDir;
   late DirectoryLoader _documentLoader;
   late Embeddings _embeddings;
+  late obx.Store _objectBoxStore;
   late MyObjectBoxVectorStore
-      _objectBox; // Custom class for ObjectBoxVectorStore (exposing store variable)
+      _objectBoxVectorStore; // Custom class for ObjectBoxVectorStore (exposing store variable)
   late VectorStoreRetriever _retriever;
   late ChatOllama _llm;
 
@@ -44,23 +46,35 @@ class RAGWithObjectBox {
 
     // Initialize the LLM model
     print("[RAGWithObjectBox] Initializing the LLM model...");
-    _llm =
-        ChatOllama(defaultOptions: const ChatOllamaOptions(model: "phi3:14b"));
+    _llm = ChatOllama(defaultOptions: const ChatOllamaOptions(model: "phi3"));
+  }
 
-    // Initialize ObjectBox (the vector store)
+  _setupObjectBoxVectorStore() async {
     print("[RAGWithObjectBox] Initializing ObjectBox...");
-    _objectBox = MyObjectBoxVectorStore(
-        embeddings: _embeddings,
-        dimensions:
-            1024, // The dimension of OllamaEmbeddings (model mxbai-embed-large)
-        directory: dbDir);
-    _retriever = VectorStoreRetriever(vectorStore: _objectBox);
+    _objectBoxStore =
+        await openStore(directory: dbDir, maxDBSizeInKB: 1024 * 1024 /* 1GB */);
+    _objectBoxVectorStore =
+        MyObjectBoxVectorStore(embeddings: _embeddings, store: _objectBoxStore);
+    _retriever = VectorStoreRetriever(vectorStore: _objectBoxVectorStore);
+  }
+
+  /// Debug function, ignore it :)
+  _runTestVectorSearch() async {
+    final embeddings = await _embeddings.embedQuery(
+        "Talk me about the Third Republic of France? Who was Napoleone?");
+    List<(Document, double)> documents =
+        await _objectBoxVectorStore.similaritySearchByVectorWithScores(
+            embedding: embeddings,
+            config: const VectorStoreSimilaritySearch(k: 3));
+    print("[RAGWithObjectBox] Run test retrieval:");
+    for (final (document, score) in documents) {
+      print("$score - ${document.metadata['name']}");
+    }
   }
 
   /// Tell whether documents shall be loaded from disk and stored in ObjectBox.
   bool _shouldStoreDocuments() {
-    objectbox.Box<ObjectBoxDocument> box =
-        MyObjectBoxVectorStore.store!.box<ObjectBoxDocument>();
+    final box = _objectBoxStore.box<MyDocumentEntity>();
     int numDocuments = box.count();
     if (numDocuments > 0) {
       print("[RAGWithObjectBox] DB found with $numDocuments documents");
@@ -73,8 +87,7 @@ class RAGWithObjectBox {
   Future<void> _loadAndStoreDocuments() async {
     print("[RAGWithObjectBox] Storing documents in the Vector DB...");
 
-    objectbox.Box<ObjectBoxDocument> box =
-        MyObjectBoxVectorStore.store!.box<ObjectBoxDocument>();
+    final box = _objectBoxStore.box<MyDocumentEntity>();
     int numRemoved = box.removeAll();
     if (numRemoved > 0) {
       print(
@@ -100,7 +113,7 @@ class RAGWithObjectBox {
     int numAdded = 0;
     Stopwatch stopwatch = Stopwatch()..start();
     for (final chunk in splitListInChunks(documents, chunkSize)) {
-      await _objectBox.addDocuments(documents: chunk);
+      await _objectBoxVectorStore.addDocuments(documents: chunk);
       numAdded += chunkSize;
       double elapsedSeconds = stopwatch.elapsedMilliseconds.toDouble() / 1000.0;
       print(
@@ -121,12 +134,21 @@ just reformulate it if needed and otherwise return it as is.
       ChatMessagePromptTemplate.system(promptText),
       ChatMessagePromptTemplate.messagesPlaceholder("chat_history"),
       ChatMessagePromptTemplate.human(
-        "input",
+        "{input}",
       )
     ]);
     const outputParser = StringOutputParser<ChatResult>();
-    _historyAwareRetrieverChain =
-        prompt.pipe(_llm).pipe(outputParser).pipe(_retriever);
+    _historyAwareRetrieverChain = prompt
+        .pipe(_llm)
+        .pipe(outputParser)
+        .pipe(_retriever)
+        .pipe(Runnable.mapInput((List<Document> documents) {
+      print("[RAGWithObjectBox] Retrieved documents:");
+      documents.asMap().forEach((index, document) {
+        print("[RAGWithObjectBox]   $index: ${document.metadata['name']}");
+      });
+      return documents;
+    }));
   }
 
   /// Input: chat_history, input, context
@@ -172,12 +194,17 @@ don't know. Use three sentences maximum and keep the
       {required String docsDir, required String dbDir}) async {
     RAGWithObjectBox instance =
         RAGWithObjectBox._(docsDir: docsDir, dbDir: dbDir);
+    await instance._setupObjectBoxVectorStore();
     if (instance._shouldStoreDocuments()) {
       await instance._loadAndStoreDocuments();
     }
     instance._setupHistoryAwareRetrieverChain();
     instance._setupQAChain();
     instance._setupChain();
+
+    // DEBUG
+    // instance._runTestVectorSearch();
+
     return instance;
   }
 }

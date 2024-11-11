@@ -44,3 +44,5 @@ app.*.map.json
 
 /data
 /obx-db
+
+/obx-*db
