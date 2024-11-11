@@ -55,7 +55,10 @@ class RAGWithObjectBox {
         await openStore(directory: dbDir, maxDBSizeInKB: 1024 * 1024 /* 1GB */);
     _objectBoxVectorStore =
         MyObjectBoxVectorStore(embeddings: _embeddings, store: _objectBoxStore);
-    _retriever = VectorStoreRetriever(vectorStore: _objectBoxVectorStore);
+    _retriever = VectorStoreRetriever(
+        vectorStore: _objectBoxVectorStore,
+        defaultOptions: const VectorStoreRetrieverOptions(
+            searchType: VectorStoreSimilaritySearch(k: 3)));
   }
 
   /// Debug function, ignore it :)
@@ -146,6 +149,7 @@ just reformulate it if needed and otherwise return it as is.
       print("[RAGWithObjectBox] Retrieved documents:");
       documents.asMap().forEach((index, document) {
         print("[RAGWithObjectBox]   $index: ${document.metadata['name']}");
+        print(document.pageContent);
       });
       return documents;
     }));

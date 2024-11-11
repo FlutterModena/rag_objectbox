@@ -76,12 +76,11 @@ class _MainAppState extends State<MainApp> {
               ),
             ),
             child: ListTile(
-              leading: const CircleAvatar(
-                backgroundImage: NetworkImage(
-                    "https://static.wikia.nocookie.net/starwars/images/c/cc/Star-wars-logo-new-tall.jpg/revision/latest?cb=20190313021755"),
+              leading: CircleAvatar(
+                backgroundImage: FileImage(File("./countries.png")),
               ),
               title: const Text(
-                "Star Wars Expert",
+                "Countries Expert",
                 style: TextStyle(color: Colors.white),
               ),
               subtitle: loading
