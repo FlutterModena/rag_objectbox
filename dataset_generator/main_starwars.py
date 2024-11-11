@@ -7,7 +7,7 @@ import wikitextparser as wtp
 
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
-OUTPUT_DIR = path.join(SCRIPT_DIR, "data")
+OUTPUT_DIR = path.join(SCRIPT_DIR, "data_starwars")
 
 shutil.rmtree(OUTPUT_DIR, ignore_errors=True)
 os.mkdir(OUTPUT_DIR)
